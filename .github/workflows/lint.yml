@@ -2,11 +2,19 @@ name: Lint
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   all-json-valid:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+      with:
+        egress-policy: audit
+
+    - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
     - name: Lint Valid Json
       run: |
         find quirks/ -name '*.json' -print0 -maxdepth 1 | while IFS= read -r -d '' filename; do
@@ -17,23 +25,38 @@ jobs:
   change-password-urls:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+      with:
+        egress-policy: audit
+
+    - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
     - name: Lint Sort Order
       run: cat quirks/change-password-URLs.json | sed '1,1d' | sed '$d' | sort -c
 
   password-rules:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+      with:
+        egress-policy: audit
+
+    - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
     - name: Lint Sort Order
       run: cat quirks/password-rules.json | grep "^    \"" | sort -c
 
   websites-shared-credentials:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+      with:
+        egress-policy: audit
+
+    - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
     - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
+      uses: step-security/setup-ruby@37a6ba0604c7193dff21a6bfe974221525e0b2b8 # v1.321.0
       with:
         ruby-version: 2.6
     - name: Lint Sort Order
@@ -44,8 +67,13 @@ jobs:
   validate-schemas:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+      with:
+        egress-policy: audit
+
+    - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
+    - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
     - name: Install ajv-cli
       run: npm install -g ajv-cli
     - name: Validate JSONs against their schemas
